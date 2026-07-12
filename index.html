@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>看國旗猜國家挑戰賽</title>
+    <title>看國旗猜國家挑戰賽 (全球完整版)</title>
     <!-- 使用 Tailwind CSS 打造現代化美觀介面 -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -18,7 +18,7 @@
         <div id="start-screen" class="text-center py-8">
             <h1 class="text-3xl font-bold text-slate-800 mb-4">🌍 看國旗猜國家</h1>
             <p class="text-slate-600 mb-8 leading-relaxed">
-                總共 20 題。考驗你的地理常識！<br>
+                全球 197 個國家題庫，隨機抽出 20 題。<br>
                 💡 未使用提示答對：<span class="text-green-600 font-bold">5 分</span><br>
                 💡 使用提示答對：<span class="text-amber-500 font-bold">3 分</span><br>
                 ❌ 答錯或跳過：<span class="text-red-500 font-bold">0 分</span>
@@ -92,94 +92,216 @@
     </div>
 
     <script>
-        // 全球國家數據庫（包含主要中英文對應與所屬大洲）
+        // 全世界完整國家數據庫 (197 個國家/地區)
         const countryDataset = [
+            // 亞洲 (Asia)
             { code: "tw", zh: ["台灣", "臺灣", "中華民國"], en: ["taiwan", "republic of china", "roc"], continent: "亞洲" },
+            { code: "cn", zh: ["中國", "中華人民共和國"], en: ["china", "prc"], continent: "亞洲" },
             { code: "jp", zh: ["日本"], en: ["japan"], continent: "亞洲" },
             { code: "kr", zh: ["韓國", "南韓", "大韓民國"], en: ["south korea", "korea", "republic of korea"], continent: "亞洲" },
-            { code: "us", zh: ["美國", "美利堅合眾國"], en: ["united states", "usa", "us", "united states of america"], continent: "美洲" },
+            { code: "kp", zh: ["北韓", "朝鮮"], en: ["north korea", "dprk"], continent: "亞洲" },
+            { code: "mn", zh: ["蒙古"], en: ["mongolia"], continent: "亞洲" },
+            { code: "vn", zh: ["越南"], en: ["vietnam"], continent: "亞洲" },
+            { code: "la", zh: ["寮國", "老撾"], en: ["laos"], continent: "亞洲" },
+            { code: "kh", zh: ["柬埔寨"], en: ["cambodia"], continent: "亞洲" },
+            { code: "th", zh: ["泰國"], en: ["thailand"], continent: "亞洲" },
+            { code: "mm", zh: ["緬甸"], en: ["myanmar", "burma"], continent: "亞洲" },
+            { code: "my", zh: ["馬來西亞"], en: ["malaysia"], continent: "亞洲" },
+            { code: "sg", zh: ["新加坡"], en: ["singapore"], continent: "亞洲" },
+            { code: "id", zh: ["印尼", "印度尼西亞"], en: ["indonesia"], continent: "亞洲" },
+            { code: "ph", zh: ["菲律賓"], en: ["philippines"], continent: "亞洲" },
+            { code: "bn", zh: ["汶萊", "文萊"], en: ["brunei"], continent: "亞洲" },
+            { code: "tl", zh: ["東帝汶"], en: ["east timor", "timor-leste"], continent: "亞洲" },
+            { code: "in", zh: ["印度"], en: ["india"], continent: "亞洲" },
+            { code: "pk", zh: ["巴基斯坦"], en: ["pakistan"], continent: "亞洲" },
+            { code: "bd", zh: ["孟加拉"], en: ["bangladesh"], continent: "亞洲" },
+            { code: "lk", zh: ["斯里蘭卡"], en: ["sri lanka"], continent: "亞洲" },
+            { code: "mv", zh: ["馬爾地夫", "馬爾代夫"], en: ["maldives"], continent: "亞洲" },
+            { code: "np", zh: ["尼泊爾"], en: ["nepal"], continent: "亞洲" },
+            { code: "bt", zh: ["不丹"], en: ["bhutan"], continent: "亞洲" },
+            { code: "af", zh: ["阿富汗"], en: ["afghanistan"], continent: "亞洲" },
+            { code: "ir", zh: ["伊朗"], en: ["iran"], continent: "亞洲" },
+            { code: "iq", zh: ["伊拉克"], en: ["iraq"], continent: "亞洲" },
+            { code: "sy", zh: ["敘利亞"], en: ["syria"], continent: "亞洲" },
+            { code: "lb", zh: ["黎巴嫩"], en: ["lebanon"], continent: "亞洲" },
+            { code: "jo", zh: ["約旦"], en: ["jordan"], continent: "亞洲" },
+            { code: "il", zh: ["以色列"], en: ["israel"], continent: "亞洲" },
+            { code: "ps", zh: ["巴勒斯坦"], en: ["palestine"], continent: "亞洲" },
+            { code: "sa", zh: ["沙烏地阿拉伯", "沙特阿拉伯", "沙烏地"], en: ["saudi arabia"], continent: "亞洲" },
+            { code: "ye", zh: ["葉門", "也門"], en: ["yemen"], continent: "亞洲" },
+            { code: "om", zh: ["阿曼"], en: ["oman"], continent: "亞洲" },
+            { code: "ae", zh: ["阿聯酋", "阿拉伯聯合大公國"], en: ["uae", "united arab emirates"], continent: "亞洲" },
+            { code: "qa", zh: ["卡達", "卡塔爾"], en: ["qatar"], continent: "亞洲" },
+            { code: "kw", zh: ["科威特"], en: ["kuwait"], continent: "亞洲" },
+            { code: "bh", zh: ["巴林"], en: ["bahrain"], continent: "亞洲" },
+            { code: "cy", zh: ["賽普勒斯", "塞浦路斯"], en: ["cyprus"], continent: "亞洲/歐洲" },
+            { code: "ge", zh: ["喬治亞", "格魯吉亞"], en: ["georgia"], continent: "亞洲/歐洲" },
+            { code: "am", zh: ["亞美尼亞"], en: ["armenia"], continent: "亞洲" },
+            { code: "az", zh: ["亞塞拜然", "阿塞拜疆"], en: ["azerbaijan"], continent: "亞洲" },
+            { code: "kz", zh: ["哈薩克", "哈薩克斯坦"], en: ["kazakhstan"], continent: "亞洲" },
+            { code: "uz", zh: ["烏茲別克", "烏茲別克斯坦"], en: ["uzbekistan"], continent: "亞洲" },
+            { code: "tm", zh: ["土庫曼", "土庫曼斯坦"], en: ["turkmenistan"], continent: "亞洲" },
+            { code: "kg", zh: ["吉爾吉斯", "吉爾吉斯斯坦"], en: ["kyrgyzstan"], continent: "亞洲" },
+            { code: "tj", zh: ["塔吉克", "塔吉克斯坦"], en: ["tajikistan"], continent: "亞洲" },
+            { code: "tr", zh: ["土耳其"], en: ["turkey", "türkiye"], continent: "亞洲/歐洲" },
+
+            // 歐洲 (Europe)
             { code: "gb", zh: ["英國", "大不列顛", "聯合王國"], en: ["united kingdom", "uk", "great britain", "england"], continent: "歐洲" },
             { code: "fr", zh: ["法國", "法蘭西"], en: ["france"], continent: "歐洲" },
             { code: "de", zh: ["德國", "德意志"], en: ["germany"], continent: "歐洲" },
-            { code: "ca", zh: ["加拿大"], en: ["canada"], continent: "美洲" },
-            { code: "au", zh: ["澳洲", "澳大利亞"], en: ["australia"], continent: "大洋洲" },
             { code: "it", zh: ["義大利", "意大利"], en: ["italy"], continent: "歐洲" },
-            { code: "cn", zh: ["中國", "中華人民共和國"], en: ["china", "prc"], continent: "亞洲" },
-            { code: "ru", zh: ["俄羅斯", "俄國"], en: ["russia", "russian federation"], continent: "歐洲/亞洲" },
-            { code: "br", zh: ["巴西"], en: ["brazil"], continent: "美洲" },
-            { code: "in", zh: ["印度"], en: ["india"], continent: "亞洲" },
-            { code: "za", zh: ["南非"], en: ["south africa"], continent: "非洲" },
             { code: "es", zh: ["西班牙"], en: ["spain"], continent: "歐洲" },
+            { code: "pt", zh: ["葡萄牙"], en: ["portugal"], continent: "歐洲" },
             { code: "nl", zh: ["荷蘭"], en: ["netherlands", "holland"], continent: "歐洲" },
+            { code: "be", zh: ["比利時"], en: ["belgium"], continent: "歐洲" },
+            { code: "lu", zh: ["盧森堡"], en: ["luxembourg"], continent: "歐洲" },
+            { code: "ie", zh: ["愛爾蘭"], en: ["ireland"], continent: "歐洲" },
             { code: "ch", zh: ["瑞士"], en: ["switzerland"], continent: "歐洲" },
+            { code: "at", zh: ["奧地利"], en: ["austria"], continent: "歐洲" },
+            { code: "mc", zh: ["摩納哥"], en: ["monaco"], continent: "歐洲" },
+            { code: "li", zh: ["列支敦斯登", "列支敦士登"], en: ["liechtenstein"], continent: "歐洲" },
+            { code: "va", zh: ["梵蒂岡"], en: ["vatican", "vatican city"], continent: "歐洲" },
+            { code: "sm", zh: ["聖馬利諾", "聖馬力諾"], en: ["san marino"], continent: "歐洲" },
+            { code: "ad", zh: ["安道爾"], en: ["andorra"], continent: "歐洲" },
+            { code: "mt", zh: ["馬爾他", "馬耳他"], en: ["malta"], continent: "歐洲" },
+            { code: "gr", zh: ["希臘"], en: ["greece"], continent: "歐洲" },
             { code: "se", zh: ["瑞典"], en: ["sweden"], continent: "歐洲" },
             { code: "no", zh: ["挪威"], en: ["norway"], continent: "歐洲" },
-            { code: "sg", zh: ["新加坡"], en: ["singapore"], continent: "亞洲" },
-            { code: "my", zh: ["馬來西亞"], en: ["malaysia"], continent: "亞洲" },
-            { code: "th", zh: ["泰國"], en: ["thailand"], continent: "亞洲" },
-            { code: "vn", zh: ["越南"], en: ["vietnam"], continent: "亞洲" },
-            { code: "ph", zh: ["菲律賓"], en: ["philippines"], continent: "亞洲" },
-            { code: "id", zh: ["印尼", "印度尼西亞"], en: ["indonesia"], continent: "亞洲" },
-            { code: "nz", zh: ["紐西蘭", "新西蘭"], en: ["new zealand"], continent: "大洋洲" },
-            { code: "mx", zh: ["墨西哥"], en: ["mexico"], continent: "美洲" },
-            { code: "ar", zh: ["阿根廷"], en: ["argentina"], continent: "美洲" },
-            { code: "eg", zh: ["埃及"], en: ["egypt"], continent: "非洲" },
-            { code: "tr", zh: ["土耳其"], en: ["turkey", "türkiye"], continent: "亞洲/歐洲" },
-            { code: "sa", zh: ["沙烏地阿拉伯", "沙特阿拉伯", "沙烏地", "沙特"], en: ["saudi arabia"], continent: "亞洲" },
-            { code: "ae", zh: ["阿聯酋", "阿拉伯聯合大公國", "阿拉伯聯合酋長國"], en: ["uae", "united arab emirates"], continent: "亞洲" },
-            { code: "il", zh: ["以色列"], en: ["israel"], continent: "亞洲" },
-            { code: "gr", zh: ["希臘"], en: ["greece"], continent: "歐洲" },
-            { code: "pt", zh: ["葡萄牙"], en: ["portugal"], continent: "歐洲" },
-            { code: "ie", zh: ["愛爾蘭"], en: ["ireland"], continent: "歐洲" },
-            { code: "be", zh: ["比利時"], en: ["belgium"], continent: "歐洲" },
-            { code: "at", zh: ["奧地利"], en: ["austria"], continent: "歐洲" },
             { code: "dk", zh: ["丹麥"], en: ["denmark"], continent: "歐洲" },
             { code: "fi", zh: ["芬蘭"], en: ["finland"], continent: "歐洲" },
+            { code: "is", zh: ["冰島"], en: ["iceland"], continent: "歐洲" },
+            { code: "ee", zh: ["愛沙尼亞"], en: ["estonia"], continent: "歐洲" },
+            { code: "lv", zh: ["拉脫維亞"], en: ["latvia"], continent: "歐洲" },
+            { code: "lt", zh: ["立陶宛"], en: ["lithuania"], continent: "歐洲" },
             { code: "pl", zh: ["波蘭"], en: ["poland"], continent: "歐洲" },
-            { code: "ua", zh: ["烏克蘭"], en: ["ukraine"], continent: "歐洲" },
-            { code: "cl", zh: ["智利"], en: ["chile"], continent: "美洲" },
-            { code: "co", zh: ["哥倫比亞"], en: ["colombia"], continent: "美洲" },
-            { code: "pe", zh: ["秘魯"], en: ["peru"], continent: "美洲" },
-            { code: "pk", zh: ["巴基斯坦"], en: ["pakistan"], continent: "亞洲" },
-            { code: "bd", zh: ["孟加拉"], en: ["bangladesh"], continent: "亞洲" },
-            { code: "ir", zh: ["伊朗"], en: ["iran"], continent: "亞洲" },
-            { code: "iq", zh: ["伊拉克"], en: ["iraq"], continent: "亞洲" },
-            { code: "kp", zh: ["北韓", "朝鮮"], en: ["north korea", "dprk"], continent: "亞洲" },
-            { code: "mo", zh: ["澳門"], en: ["macau", "macao"], continent: "亞洲" },
-            { code: "hk", zh: ["香港"], en: ["hong kong"], continent: "亞洲" },
-            { code: "mn", zh: ["蒙古"], en: ["mongolia"], continent: "亞洲" },
-            { code: "kh", zh: ["柬埔寨"], en: ["cambodia"], continent: "亞洲" },
-            { code: "la", zh: ["寮國", "老撾"], en: ["laos"], continent: "亞洲" },
-            { code: "mm", zh: ["緬甸"], en: ["myanmar", "burma"], continent: "亞洲" },
-            { code: "lk", zh: ["斯里蘭卡"], en: ["sri lanka"], continent: "亞洲" },
-            { code: "np", zh: ["尼泊爾"], en: ["nepal"], continent: "亞洲" },
-            { code: "mv", zh: ["馬爾地夫", "馬爾代夫"], en: ["maldives"], continent: "亞洲" },
             { code: "cz", zh: ["捷克"], en: ["czechia", "czech republic"], continent: "歐洲" },
+            { code: "sk", zh: ["斯洛伐克"], en: ["slovakia"], continent: "歐洲" },
             { code: "hu", zh: ["匈牙利"], en: ["hungary"], continent: "歐洲" },
             { code: "ro", zh: ["羅馬尼亞"], en: ["romania"], continent: "歐洲" },
             { code: "bg", zh: ["保加利亞"], en: ["bulgaria"], continent: "歐洲" },
+            { code: "al", zh: ["阿爾巴尼亞"], en: ["albania"], continent: "歐洲" },
+            { code: "rs", zh: ["塞爾維亞"], en: ["serbia"], continent: "歐洲" },
+            { code: "xk", zh: ["科索沃"], en: ["kosovo"], continent: "歐洲" },
+            { code: "me", zh: ["蒙特內哥羅", "黑山"], en: ["montenegro"], continent: "歐洲" },
+            { code: "ba", zh: ["波士尼亞與赫塞哥維納", "波黑"], en: ["bosnia and herzegovina", "bosnia"], continent: "歐洲" },
             { code: "hr", zh: ["克羅埃西亞", "克羅地亞"], en: ["croatia"], continent: "歐洲" },
-            { code: "is", zh: ["冰島"], en: ["iceland"], continent: "歐洲" },
-            { code: "cu", zh: ["古巴"], en: ["cuba"], continent: "美洲" },
-            { code: "jm", zh: ["牙買加"], en: ["jamaica"], continent: "美洲" },
-            { code: "pa", zh: ["巴拿馬"], en: ["panama"], continent: "美洲" },
-            { code: "ve", zh: ["委內瑞拉"], en: ["venezuela"], continent: "美洲" },
-            { code: "ec", zh: ["厄瓜多", "厄瓜多爾"], en: ["ecuador"], continent: "美洲" },
-            { code: "ma", zh: ["摩洛哥"], en: ["morocco"], continent: "非洲" },
-            { code: "dz", zh: ["阿爾及利亞"], en: ["algeria"], continent: "非洲" },
-            { code: "tn", zh: ["突尼西亞", "突尼斯"], en: ["tunisia"], continent: "非洲" },
-            { code: "ng", zh: ["奈及利亞", "尼日利亞"], en: ["nigeria"], continent: "非洲" },
-            { code: "gh", zh: ["迦納", "加納"], en: ["ghana"], continent: "非洲" },
-            { code: "ke", zh: ["肯亞", "肯尼亞"], en: ["kenya"], continent: "非洲" },
-            { code: "et", zh: ["衣索比亞", "埃塞俄比亞"], en: ["ethiopia"], continent: "非洲" },
-            { code: "tz", zh: ["坦尚尼亞", "坦桑尼亞"], en: ["tanzania"], continent: "非洲" },
-            { code: "mg", zh: ["馬達加斯加"], en: ["madagascar"], continent: "非洲" },
-            { code: "fj", zh: ["斐濟"], en: ["fiji"], continent: "大洋洲" },
+            { code: "si", zh: ["斯洛維尼亞", "斯洛文尼亞"], en: ["slovenia"], continent: "歐洲" },
+            { code: "mk", zh: ["北馬其頓", "馬其頓"], en: ["north macedonia", "macedonia"], continent: "歐洲" },
+            { code: "ru", zh: ["俄羅斯", "俄國"], en: ["russia", "russian federation"], continent: "歐洲/亞洲" },
+            { code: "ua", zh: ["烏克蘭"], en: ["ukraine"], continent: "歐洲" },
+            { code: "by", zh: ["白俄羅斯"], en: ["belarus"], continent: "歐洲" },
+            { code: "md", zh: ["摩爾多瓦"], en: ["moldova"], continent: "歐洲" },
+
+            // 北美洲與中美洲 (North & Central America)
+            { code: "us", zh: ["美國", "美利堅合眾國"], en: ["united states", "usa", "us", "united states of america"], continent: "北美洲" },
+            { code: "ca", zh: ["加拿大"], en: ["canada"], continent: "北美洲" },
+            { code: "mx", zh: ["墨西哥"], en: ["mexico"], continent: "北美洲" },
+            { code: "gt", zh: ["瓜地馬拉", "危地馬拉"], en: ["guatemala"], continent: "北美洲" },
+            { code: "bz", zh: ["貝里斯", "伯利茲"], en: ["belize"], continent: "北美洲" },
+            { code: "sv", zh: ["薩爾瓦多"], en: ["el salvador"], continent: "北美洲" },
+            { code: "hn", zh: ["宏都拉斯", "洪都拉斯"], en: ["honduras"], continent: "北美洲" },
+            { code: "ni", zh: ["尼加拉瓜"], en: ["nicaragua"], continent: "北美洲" },
+            { code: "cr", zh: ["哥斯大黎加", "哥斯達黎加"], en: ["costa rica"], continent: "北美洲" },
+            { code: "pa", zh: ["巴拿馬"], en: ["panama"], continent: "北美洲" },
+            { code: "cu", zh: ["古巴"], en: ["cuba"], continent: "北美洲" },
+            { code: "bs", zh: ["巴哈馬"], en: ["bahamas"], continent: "北美洲" },
+            { code: "jm", zh: ["牙買加"], en: ["jamaica"], continent: "北美洲" },
+            { code: "ht", zh: ["海地"], en: ["haiti"], continent: "北美洲" },
+            { code: "do", zh: ["多明尼加"], en: ["dominican republic"], continent: "北美洲" },
+            { code: "kn", zh: ["聖克里斯多福及尼維斯", "聖基茨和尼維斯"], en: ["saint kitts and nevis"], continent: "北美洲" },
+            { code: "ag", zh: ["安地卡及巴布達", "安提瓜和巴布達"], en: ["antigua and barbuda"], continent: "北美洲" },
+            { code: "dm", zh: ["多米尼克"], en: ["dominica"], continent: "北美洲" },
+            { code: "lc", zh: ["聖露西亞", "聖盧西亞"], en: ["saint lucia"], continent: "北美洲" },
+            { code: "vc", zh: ["聖文森及格瑞那丁", "聖文森特和格林納丁斯"], en: ["saint vincent and the grenadines"], continent: "北美洲" },
+            { code: "bb", zh: ["巴貝多", "巴巴多斯"], en: ["barbados"], continent: "北美洲" },
+            { code: "gd", zh: ["格瑞那達", "格林納達"], en: ["grenada"], continent: "北美洲" },
+            { code: "tt", zh: ["千里達及托巴哥", "特立尼達和多巴哥"], en: ["trinidad and tobago"], continent: "北美洲" },
+
+            // 南美洲 (South America)
+            { code: "co", zh: ["哥倫比亞"], en: ["colombia"], continent: "南美洲" },
+            { code: "ve", zh: ["委內瑞拉"], en: ["venezuela"], continent: "南美洲" },
+            { code: "gy", zh: ["蓋亞那", "圭亞那"], en: ["guyana"], continent: "南美洲" },
+            { code: "sr", zh: ["蘇利南", "蘇里南"], en: ["suriname"], continent: "南美洲" },
+            { code: "ec", zh: ["厄瓜多", "厄瓜多爾"], en: ["ecuador"], continent: "南美洲" },
+            { code: "pe", zh: ["秘魯", "祕魯"], en: ["peru"], continent: "南美洲" },
+            { code: "br", zh: ["巴西"], en: ["brazil"], continent: "南美洲" },
+            { code: "bo", zh: ["玻利維亞"], en: ["bolivia"], continent: "南美洲" },
+            { code: "py", zh: ["巴拉圭"], en: ["paraguay"], continent: "南美洲" },
+            { code: "cl", zh: ["智利"], en: ["chile"], continent: "南美洲" },
+            { code: "ar", zh: ["阿根廷"], en: ["argentina"], continent: "南美洲" },
+            { code: "uy", zh: ["烏拉圭"], en: ["uruguay"], continent: "南美洲" },
+
+            // 大洋洲 (Oceania)
+            { code: "au", zh: ["澳洲", "澳大利亞"], en: ["australia"], continent: "大洋洲" },
+            { code: "nz", zh: ["紐西蘭", "新西蘭"], en: ["new zealand"], continent: "大洋洲" },
             { code: "pg", zh: ["巴布亞紐幾內亞", "巴布亞新幾內亞"], en: ["papua new guinea"], continent: "大洋洲" },
-            { code: "va", zh: ["梵蒂岡"], en: ["vatican", "vatican city"], continent: "歐洲" },
-            { code: "mc", zh: ["摩納哥"], en: ["monaco"], continent: "歐洲" },
-            { code: "lu", zh: ["盧森堡"], en: ["luxembourg"], continent: "歐洲" }
-            // 可在此依相同格式繼續擴充更多國家...
+            { code: "sb", zh: ["索羅門群島", "所羅門群島"], en: ["solomon islands"], continent: "大洋洲" },
+            { code: "vu", zh: ["萬那杜", "瓦努阿圖"], en: ["vanuatu"], continent: "大洋洲" },
+            { code: "fj", zh: ["斐濟"], en: ["fiji"], continent: "大洋洲" },
+            { code: "pw", zh: ["帛琉", "帕勞"], en: ["palau"], continent: "大洋洲" },
+            { code: "fm", zh: ["密克羅尼西亞"], en: ["micronesia"], continent: "大洋洲" },
+            { code: "mh", zh: ["馬紹爾群島"], en: ["marshall islands"], continent: "大洋洲" },
+            { code: "ki", zh: ["吉里巴斯", "基里巴斯"], en: ["kiribati"], continent: "大洋洲" },
+            { code: "nr", zh: ["諾魯", "瑙魯"], en: ["nauru"], continent: "大洋洲" },
+            { code: "tv", zh: ["吐瓦魯", "圖瓦盧"], en: ["tuvalu"], continent: "大洋洲" },
+            { code: "ws", zh: ["薩摩亞"], en: ["samoa"], continent: "大洋洲" },
+            { code: "to", zh: ["東加", "湯加"], en: ["tonga"], continent: "大洋洲" },
+
+            // 非洲 (Africa)
+            { code: "eg", zh: ["埃及"], en: ["egypt"], continent: "非洲" },
+            { code: "ly", zh: ["利比亞"], en: ["libya"], continent: "非洲" },
+            { code: "tn", zh: ["突尼西亞", "突尼斯"], en: ["tunisia"], continent: "非洲" },
+            { code: "dz", zh: ["阿爾及利亞"], en: ["algeria"], continent: "非洲" },
+            { code: "ma", zh: ["摩洛哥"], en: ["morocco"], continent: "非洲" },
+            { code: "sd", zh: ["蘇丹"], en: ["sudan"], continent: "非洲" },
+            { code: "ss", zh: ["南蘇丹"], en: ["south sudan"], continent: "非洲" },
+            { code: "er", zh: ["厄利垂亞", "厄立特里亞"], en: ["eritrea"], continent: "非洲" },
+            { code: "dj", zh: ["吉布地", "吉布提"], en: ["djibouti"], continent: "非洲" },
+            { code: "so", zh: ["索馬利亞", "索馬里"], en: ["somalia"], continent: "非洲" },
+            { code: "et", zh: ["衣索比亞", "埃塞俄比亞"], en: ["ethiopia"], continent: "非洲" },
+            { code: "ke", zh: ["肯亞", "肯尼亞"], en: ["kenya"], continent: "非洲" },
+            { code: "tz", zh: ["坦尚尼亞", "坦桑尼亞"], en: ["tanzania"], continent: "非洲" },
+            { code: "ug", zh: ["烏干達"], en: ["uganda"], continent: "非洲" },
+            { code: "rw", zh: ["盧安達", "盧旺達"], en: ["rwanda"], continent: "非洲" },
+            { code: "bi", zh: ["蒲隆地", "布隆迪"], en: ["burundi"], continent: "非洲" },
+            { code: "mr", zh: ["茅利塔尼亞", "毛里塔尼亞"], en: ["mauritania"], continent: "非洲" },
+            { code: "ml", zh: ["馬利", "馬里"], en: ["mali"], continent: "非洲" },
+            { code: "ne", zh: ["尼日"], en: ["niger"], continent: "非洲" },
+            { code: "td", zh: ["查德", "乍得"], en: ["chad"], continent: "非洲" },
+            { code: "sn", zh: ["塞內加爾"], en: ["senegal"], continent: "非洲" },
+            { code: "gm", zh: ["甘比亞", "岡比亞"], en: ["gambia"], continent: "非洲" },
+            { code: "gw", zh: ["幾內亞比索", "幾內亞比紹"], en: ["guinea-bissau"], continent: "非洲" },
+            { code: "gn", zh: ["幾內亞"], en: ["guinea"], continent: "非洲" },
+            { code: "sl", zh: ["獅子山", "塞拉利昂"], en: ["sierra leone"], continent: "非洲" },
+            { code: "lr", zh: ["賴比瑞亞", "利比里亞"], en: ["liberia"], continent: "非洲" },
+            { code: "ci", zh: ["象牙海岸", "科特迪瓦"], en: ["ivory coast", "cote d'ivoire"], continent: "非洲" },
+            { code: "bf", zh: ["布吉納法索", "布基納法索"], en: ["burkina faso"], continent: "非洲" },
+            { code: "gh", zh: ["迦納", "加納"], en: ["ghana"], continent: "非洲" },
+            { code: "tg", zh: ["多哥"], en: ["togo"], continent: "非洲" },
+            { code: "bj", zh: ["貝南", "貝寧"], en: ["benin"], continent: "非洲" },
+            { code: "ng", zh: ["奈及利亞", "尼日利亞"], en: ["nigeria"], continent: "非洲" },
+            { code: "cm", zh: ["喀麥隆"], en: ["cameroon"], continent: "非洲" },
+            { code: "cf", zh: ["中非共和國", "中非"], en: ["central african republic", "car"], continent: "非洲" },
+            { code: "gq", zh: ["赤道幾內亞"], en: ["equatorial guinea"], continent: "非洲" },
+            { code: "ga", zh: ["加彭", "加蓬"], en: ["gabon"], continent: "非洲" },
+            { code: "cg", zh: ["剛果共和國", "剛果", "剛果(布)"], en: ["republic of the congo", "congo"], continent: "非洲" },
+            { code: "cd", zh: ["剛果民主共和國", "民主剛果", "剛果(金)"], en: ["democratic republic of the congo", "drc"], continent: "非洲" },
+            { code: "st", zh: ["聖多美普林西比", "聖多美和普林西比"], en: ["sao tome and principe"], continent: "非洲" },
+            { code: "ao", zh: ["安哥拉"], en: ["angola"], continent: "非洲" },
+            { code: "zm", zh: ["尚比亞", "贊比亞"], en: ["zambia"], continent: "非洲" },
+            { code: "mw", zh: ["馬拉威", "馬拉維"], en: ["malawi"], continent: "非洲" },
+            { code: "mz", zh: ["莫三比克", "莫桑比克"], en: ["mozambique"], continent: "非洲" },
+            { code: "zw", zh: ["辛巴威", "津巴布韋"], en: ["zimbabwe"], continent: "非洲" },
+            { code: "bw", zh: ["波札那", "博茨瓦納"], en: ["botswana"], continent: "非洲" },
+            { code: "na", zh: ["納米比亞"], en: ["namibia"], continent: "非洲" },
+            { code: "za", zh: ["南非"], en: ["south africa"], continent: "非洲" },
+            { code: "ls", zh: ["賴索托", "萊索托"], en: ["lesotho"], continent: "非洲" },
+            { code: "sz", zh: ["史瓦帝尼", "斯威士蘭"], en: ["eswatini", "swaziland"], continent: "非洲" },
+            { code: "mg", zh: ["馬達加斯加"], en: ["madagascar"], continent: "非洲" },
+            { code: "mu", zh: ["模里西斯", "毛里求斯"], en: ["mauritius"], continent: "非洲" },
+            { code: "km", zh: ["葛摩", "科摩羅"], en: ["comoros"], continent: "非洲" },
+            { code: "sc", zh: ["塞席爾", "塞舌爾"], en: ["seychelles"], continent: "非洲" },
+            { code: "cv", zh: ["維德角", "佛得角"], en: ["cape verde", "cabo verde"], continent: "非洲" }
         ];
 
         // 遊戲變數
@@ -249,7 +371,7 @@
             const progressPercent = ((currentQuestionIndex + 1) / quizPool.length) * 100;
             progressBar.style.width = `${progressPercent}%`;
 
-            // 設定國旗與提示內容（國旗使用開源 flagcdn 服務）
+            // 設定國旗與提示內容
             const currentCountry = quizPool[currentQuestionIndex];
             flagImg.src = `https://flagcdn.com/w320/${currentCountry.code}.png`;
             continentName.textContent = currentCountry.continent;
@@ -262,6 +384,7 @@
             hintUsed = true;
             hintText.classList.remove('hidden');
             hintBtn.classList.add('hidden');
+            answerInput.focus();
         }
 
         // 提交答案
@@ -289,10 +412,10 @@
                 score += pointsEarned;
                 updateScoreDisplay();
                 
-                feedback.textContent = `🎉 正確！增加 ${pointsEarned} 分 (正確答案: ${currentCountry.zh[0]} / ${currentCountry.en[0].toUpperCase()})`;
+                feedback.innerHTML = `🎉 正確！增加 ${pointsEarned} 分<br><span class="text-sm font-normal text-green-600">正確答案: ${currentCountry.zh[0]} / ${currentCountry.en[0].toUpperCase()}</span>`;
                 feedback.className = "mt-6 p-4 rounded-xl text-center font-bold bg-green-50 text-green-700 border border-green-200";
             } else {
-                feedback.textContent = `❌ 答錯了！正確答案是: ${currentCountry.zh[0]} (${currentCountry.en[0].toUpperCase()})`;
+                feedback.innerHTML = `❌ 答錯了！<br><span class="text-sm font-normal text-red-600">正確答案是: ${currentCountry.zh[0]} (${currentCountry.en[0].toUpperCase()})</span>`;
                 feedback.className = "mt-6 p-4 rounded-xl text-center font-bold bg-red-50 text-red-700 border border-red-200";
             }
 
@@ -309,7 +432,7 @@
             isAnswered = true;
             answerInput.disabled = true;
 
-            feedback.textContent = `🏳️ 已跳過。正確答案是: ${currentCountry.zh[0]} (${currentCountry.en[0].toUpperCase()})`;
+            feedback.innerHTML = `🏳️ 已跳過。<br><span class="text-sm font-normal text-slate-500">正確答案是: ${currentCountry.zh[0]} (${currentCountry.en[0].toUpperCase()})</span>`;
             feedback.className = "mt-6 p-4 rounded-xl text-center font-bold bg-slate-100 text-slate-600 border border-slate-200";
             
             feedback.classList.remove('hidden');
