@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>看國旗猜國家挑戰賽</title>
+    <!-- 使用 Tailwind CSS 打造現代化美觀介面 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen flex flex-col items-center justify-center p-4">
+
+    <div id="game-container" class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-lg transition-all duration-300">
+        <!-- 讀取中 / 準備畫面 -->
+        <div id="start-screen" class="text-center py-8">
+            <h1 class="text-3xl font-bold text-slate-800 mb-4">🌍 看國旗猜國家</h1>
+            <p class="text-slate-600 mb-8 leading-relaxed">
+                總共 20 題。考驗你的地理常識！<br>
+                💡 未使用提示答對：<span class="text-green-600 font-bold">5 分</span><br>
+                💡 使用提示答對：<span class="text-amber-500 font-bold">3 分</span><br>
+                ❌ 答錯或跳過：<span class="text-red-500 font-bold">0 分</span>
+            </p>
+            <button id="start-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg transform hover:-translate-y-0.5 transition-all w-full md:w-auto">
+                開始挑戰
+            </button>
+        </div>
+
+        <!-- 遊戲主畫面 (預設隱藏) -->
+        <div id="quiz-screen" class="hidden">
+            <!-- 進度條與分數 -->
+            <div class="flex justify-between items-center mb-6">
+                <span id="progress-text" class="text-sm font-semibold text-slate-500">第 1 / 20 題</span>
+                <span id="score-text" class="text-lg font-bold text-indigo-600">分數: 0</span>
+            </div>
+            <div class="w-full bg-slate-100 h-2 rounded-full mb-6 overflow-hidden">
+                <div id="progress-bar" class="bg-indigo-600 h-full transition-all duration-300" style="width: 5%"></div>
+            </div>
+
+            <!-- 國旗顯示區 -->
+            <div class="flex justify-center items-center bg-slate-100 rounded-xl p-4 mb-6 min-h-[200px] border border-slate-200 shadow-inner">
+                <img id="flag-img" src="" alt="National Flag" class="max-h-40 object-contain shadow-md rounded border border-slate-300">
+            </div>
+
+            <!-- 提示按鈕與提示文字 -->
+            <div class="mb-6 text-center">
+                <button id="hint-btn" class="text-sm font-medium text-amber-600 hover:text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 px-4 py-1.5 rounded-full transition-colors focus:outline-none">
+                    💡 顯示提示 (本題最高得 3 分)
+                </button>
+                <p id="hint-text" class="hidden mt-2 text-sm text-slate-500 font-semibold bg-slate-50 py-2 rounded-lg border border-dashed border-slate-200">
+                    提示：這個國家位於 <span id="continent-name" class="text-amber-600"></span>
+                </p>
+            </div>
+
+            <!-- 輸入框與提交 -->
+            <form id="answer-form" onsubmit="event.preventDefault(); submitAnswer();" class="space-y-4">
+                <div>
+                    <input type="text" id="answer-input" autocomplete="off" placeholder="請輸入中文或英文國家名稱..." 
+                        class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm text-center font-medium">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <button type="button" id="skip-btn" onclick="skipQuestion()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold py-3 px-4 rounded-xl transition-colors">
+                        跳過此題
+                    </button>
+                    <button type="submit" id="submit-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-xl shadow-md transition-colors">
+                        提交答案
+                    </button>
+                </div>
+            </form>
+
+            <!-- 答案反饋區 -->
+            <div id="feedback" class="hidden mt-6 p-4 rounded-xl text-center font-bold"></div>
+        </div>
+
+        <!-- 結束結算畫面 (預設隱藏) -->
+        <div id="result-screen" class="hidden text-center py-6">
+            <h2 class="text-3xl font-bold text-slate-800 mb-2">🎉 挑戰結束！</h2>
+            <p class="text-slate-500 mb-6">您的最終表現</p>
+            
+            <div class="bg-indigo-50 rounded-2xl p-6 mb-8 inline-block min-w-[200px]">
+                <div class="text-sm text-indigo-600 font-medium uppercase tracking-wider">總得分</div>
+                <div id="final-score" class="text-5xl font-black text-indigo-700 mt-1">0</div>
+                <div id="accuracy-text" class="text-xs text-slate-400 mt-2">最高可得 100 分</div>
+            </div>
+
+            <button id="restart-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg transform hover:-translate-y-0.5 transition-all w-full md:w-auto">
+                再玩一次
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // 全球國家數據庫（包含主要中英文對應與所屬大洲）
+        const countryDataset = [
+            { code: "tw", zh: ["台灣", "臺灣", "中華民國"], en: ["taiwan", "republic of china", "roc"], continent: "亞洲" },
+            { code: "jp", zh: ["日本"], en: ["japan"], continent: "亞洲" },
+            { code: "kr", zh: ["韓國", "南韓", "大韓民國"], en: ["south korea", "korea", "republic of korea"], continent: "亞洲" },
+            { code: "us", zh: ["美國", "美利堅合眾國"], en: ["united states", "usa", "us", "united states of america"], continent: "美洲" },
+            { code: "gb", zh: ["英國", "大不列顛", "聯合王國"], en: ["united kingdom", "uk", "great britain", "england"], continent: "歐洲" },
+            { code: "fr", zh: ["法國", "法蘭西"], en: ["france"], continent: "歐洲" },
+            { code: "de", zh: ["德國", "德意志"], en: ["germany"], continent: "歐洲" },
+            { code: "ca", zh: ["加拿大"], en: ["canada"], continent: "美洲" },
+            { code: "au", zh: ["澳洲", "澳大利亞"], en: ["australia"], continent: "大洋洲" },
+            { code: "it", zh: ["義大利", "意大利"], en: ["italy"], continent: "歐洲" },
+            { code: "cn", zh: ["中國", "中華人民共和國"], en: ["china", "prc"], continent: "亞洲" },
+            { code: "ru", zh: ["俄羅斯", "俄國"], en: ["russia", "russian federation"], continent: "歐洲/亞洲" },
+            { code: "br", zh: ["巴西"], en: ["brazil"], continent: "美洲" },
+            { code: "in", zh: ["印度"], en: ["india"], continent: "亞洲" },
+            { code: "za", zh: ["南非"], en: ["south africa"], continent: "非洲" },
+            { code: "es", zh: ["西班牙"], en: ["spain"], continent: "歐洲" },
+            { code: "nl", zh: ["荷蘭"], en: ["netherlands", "holland"], continent: "歐洲" },
+            { code: "ch", zh: ["瑞士"], en: ["switzerland"], continent: "歐洲" },
+            { code: "se", zh: ["瑞典"], en: ["sweden"], continent: "歐洲" },
+            { code: "no", zh: ["挪威"], en: ["norway"], continent: "歐洲" },
+            { code: "sg", zh: ["新加坡"], en: ["singapore"], continent: "亞洲" },
+            { code: "my", zh: ["馬來西亞"], en: ["malaysia"], continent: "亞洲" },
+            { code: "th", zh: ["泰國"], en: ["thailand"], continent: "亞洲" },
+            { code: "vn", zh: ["越南"], en: ["vietnam"], continent: "亞洲" },
+            { code: "ph", zh: ["菲律賓"], en: ["philippines"], continent: "亞洲" },
+            { code: "id", zh: ["印尼", "印度尼西亞"], en: ["indonesia"], continent: "亞洲" },
+            { code: "nz", zh: ["紐西蘭", "新西蘭"], en: ["new zealand"], continent: "大洋洲" },
+            { code: "mx", zh: ["墨西哥"], en: ["mexico"], continent: "美洲" },
+            { code: "ar", zh: ["阿根廷"], en: ["argentina"], continent: "美洲" },
+            { code: "eg", zh: ["埃及"], en: ["egypt"], continent: "非洲" },
+            { code: "tr", zh: ["土耳其"], en: ["turkey", "türkiye"], continent: "亞洲/歐洲" },
+            { code: "sa", zh: ["沙烏地阿拉伯", "沙特阿拉伯", "沙烏地", "沙特"], en: ["saudi arabia"], continent: "亞洲" },
+            { code: "ae", zh: ["阿聯酋", "阿拉伯聯合大公國", "阿拉伯聯合酋長國"], en: ["uae", "united arab emirates"], continent: "亞洲" },
+            { code: "il", zh: ["以色列"], en: ["israel"], continent: "亞洲" },
+            { code: "gr", zh: ["希臘"], en: ["greece"], continent: "歐洲" },
+            { code: "pt", zh: ["葡萄牙"], en: ["portugal"], continent: "歐洲" },
+            { code: "ie", zh: ["愛爾蘭"], en: ["ireland"], continent: "歐洲" },
+            { code: "be", zh: ["比利時"], en: ["belgium"], continent: "歐洲" },
+            { code: "at", zh: ["奧地利"], en: ["austria"], continent: "歐洲" },
+            { code: "dk", zh: ["丹麥"], en: ["denmark"], continent: "歐洲" },
+            { code: "fi", zh: ["芬蘭"], en: ["finland"], continent: "歐洲" },
+            { code: "pl", zh: ["波蘭"], en: ["poland"], continent: "歐洲" },
+            { code: "ua", zh: ["烏克蘭"], en: ["ukraine"], continent: "歐洲" },
+            { code: "cl", zh: ["智利"], en: ["chile"], continent: "美洲" },
+            { code: "co", zh: ["哥倫比亞"], en: ["colombia"], continent: "美洲" },
+            { code: "pe", zh: ["秘魯"], en: ["peru"], continent: "美洲" },
+            { code: "pk", zh: ["巴基斯坦"], en: ["pakistan"], continent: "亞洲" },
+            { code: "bd", zh: ["孟加拉"], en: ["bangladesh"], continent: "亞洲" },
+            { code: "ir", zh: ["伊朗"], en: ["iran"], continent: "亞洲" },
+            { code: "iq", zh: ["伊拉克"], en: ["iraq"], continent: "亞洲" },
+            { code: "kp", zh: ["北韓", "朝鮮"], en: ["north korea", "dprk"], continent: "亞洲" },
+            { code: "mo", zh: ["澳門"], en: ["macau", "macao"], continent: "亞洲" },
+            { code: "hk", zh: ["香港"], en: ["hong kong"], continent: "亞洲" },
+            { code: "mn", zh: ["蒙古"], en: ["mongolia"], continent: "亞洲" },
+            { code: "kh", zh: ["柬埔寨"], en: ["cambodia"], continent: "亞洲" },
+            { code: "la", zh: ["寮國", "老撾"], en: ["laos"], continent: "亞洲" },
+            { code: "mm", zh: ["緬甸"], en: ["myanmar", "burma"], continent: "亞洲" },
+            { code: "lk", zh: ["斯里蘭卡"], en: ["sri lanka"], continent: "亞洲" },
+            { code: "np", zh: ["尼泊爾"], en: ["nepal"], continent: "亞洲" },
+            { code: "mv", zh: ["馬爾地夫", "馬爾代夫"], en: ["maldives"], continent: "亞洲" },
+            { code: "cz", zh: ["捷克"], en: ["czechia", "czech republic"], continent: "歐洲" },
+            { code: "hu", zh: ["匈牙利"], en: ["hungary"], continent: "歐洲" },
+            { code: "ro", zh: ["羅馬尼亞"], en: ["romania"], continent: "歐洲" },
+            { code: "bg", zh: ["保加利亞"], en: ["bulgaria"], continent: "歐洲" },
+            { code: "hr", zh: ["克羅埃西亞", "克羅地亞"], en: ["croatia"], continent: "歐洲" },
+            { code: "is", zh: ["冰島"], en: ["iceland"], continent: "歐洲" },
+            { code: "cu", zh: ["古巴"], en: ["cuba"], continent: "美洲" },
+            { code: "jm", zh: ["牙買加"], en: ["jamaica"], continent: "美洲" },
+            { code: "pa", zh: ["巴拿馬"], en: ["panama"], continent: "美洲" },
+            { code: "ve", zh: ["委內瑞拉"], en: ["venezuela"], continent: "美洲" },
+            { code: "ec", zh: ["厄瓜多", "厄瓜多爾"], en: ["ecuador"], continent: "美洲" },
+            { code: "ma", zh: ["摩洛哥"], en: ["morocco"], continent: "非洲" },
+            { code: "dz", zh: ["阿爾及利亞"], en: ["algeria"], continent: "非洲" },
+            { code: "tn", zh: ["突尼西亞", "突尼斯"], en: ["tunisia"], continent: "非洲" },
+            { code: "ng", zh: ["奈及利亞", "尼日利亞"], en: ["nigeria"], continent: "非洲" },
+            { code: "gh", zh: ["迦納", "加納"], en: ["ghana"], continent: "非洲" },
+            { code: "ke", zh: ["肯亞", "肯尼亞"], en: ["kenya"], continent: "非洲" },
+            { code: "et", zh: ["衣索比亞", "埃塞俄比亞"], en: ["ethiopia"], continent: "非洲" },
+            { code: "tz", zh: ["坦尚尼亞", "坦桑尼亞"], en: ["tanzania"], continent: "非洲" },
+            { code: "mg", zh: ["馬達加斯加"], en: ["madagascar"], continent: "非洲" },
+            { code: "fj", zh: ["斐濟"], en: ["fiji"], continent: "大洋洲" },
+            { code: "pg", zh: ["巴布亞紐幾內亞", "巴布亞新幾內亞"], en: ["papua new guinea"], continent: "大洋洲" },
+            { code: "va", zh: ["梵蒂岡"], en: ["vatican", "vatican city"], continent: "歐洲" },
+            { code: "mc", zh: ["摩納哥"], en: ["monaco"], continent: "歐洲" },
+            { code: "lu", zh: ["盧森堡"], en: ["luxembourg"], continent: "歐洲" }
+            // 可在此依相同格式繼續擴充更多國家...
+        ];
+
+        // 遊戲變數
+        const TOTAL_QUESTIONS = 20;
+        let quizPool = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let hintUsed = false;
+        let isAnswered = false;
+
+        // DOM 元素定義
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const startBtn = document.getElementById('start-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const flagImg = document.getElementById('flag-img');
+        const hintBtn = document.getElementById('hint-btn');
+        const hintText = document.getElementById('hint-text');
+        const continentName = document.getElementById('continent-name');
+        const answerInput = document.getElementById('answer-input');
+        const feedback = document.getElementById('feedback');
+        const progressText = document.getElementById('progress-text');
+        const scoreText = document.getElementById('score-text');
+        const progressBar = document.getElementById('progress-bar');
+        const finalScore = document.getElementById('final-score');
+        const submitBtn = document.getElementById('submit-btn');
+
+        // 初始化監聽器
+        startBtn.addEventListener('click', startGame);
+        restartBtn.addEventListener('click', startGame);
+        hintBtn.addEventListener('click', showHint);
+
+        // 開始遊戲
+        function startGame() {
+            // 洗牌算法隨機挑選 20 題
+            const shuffled = [...countryDataset].sort(() => 0.5 - Math.random());
+            quizPool = shuffled.slice(0, Math.min(TOTAL_QUESTIONS, shuffled.length));
+            
+            currentQuestionIndex = 0;
+            score = 0;
+            
+            startScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            
+            updateScoreDisplay();
+            loadQuestion();
+        }
+
+        // 載入題目
+        function loadQuestion() {
+            isAnswered = false;
+            hintUsed = false;
+            
+            // 重設 UI
+            hintText.classList.add('hidden');
+            hintBtn.classList.remove('hidden');
+            feedback.classList.add('hidden');
+            answerInput.value = '';
+            answerInput.disabled = false;
+            submitBtn.textContent = "提交答案";
+            submitBtn.className = "bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-xl shadow-md transition-colors";
+            
+            // 更新進度條
+            progressText.textContent = `第 ${currentQuestionIndex + 1} / ${quizPool.length} 題`;
+            const progressPercent = ((currentQuestionIndex + 1) / quizPool.length) * 100;
+            progressBar.style.width = `${progressPercent}%`;
+
+            // 設定國旗與提示內容（國旗使用開源 flagcdn 服務）
+            const currentCountry = quizPool[currentQuestionIndex];
+            flagImg.src = `https://flagcdn.com/w320/${currentCountry.code}.png`;
+            continentName.textContent = currentCountry.continent;
+            
+            answerInput.focus();
+        }
+
+        // 顯示提示
+        function showHint() {
+            hintUsed = true;
+            hintText.classList.remove('hidden');
+            hintBtn.classList.add('hidden');
+        }
+
+        // 提交答案
+        function submitAnswer() {
+            if (isAnswered) {
+                // 如果已經回答過，點擊該按鈕就進入下一題
+                nextQuestion();
+                return;
+            }
+
+            const userAnswer = answerInput.value.trim().toLowerCase();
+            if (!userAnswer) return; // 空答案不處理
+
+            const currentCountry = quizPool[currentQuestionIndex];
+            
+            // 驗證答案是否匹配中文或英文別名
+            const isCorrect = currentCountry.zh.some(name => name.toLowerCase() === userAnswer) || 
+                              currentCountry.en.some(name => name.toLowerCase() === userAnswer);
+
+            isAnswered = true;
+            answerInput.disabled = true;
+
+            if (isCorrect) {
+                const pointsEarned = hintUsed ? 3 : 5;
+                score += pointsEarned;
+                updateScoreDisplay();
+                
+                feedback.textContent = `🎉 正確！增加 ${pointsEarned} 分 (正確答案: ${currentCountry.zh[0]} / ${currentCountry.en[0].toUpperCase()})`;
+                feedback.className = "mt-6 p-4 rounded-xl text-center font-bold bg-green-50 text-green-700 border border-green-200";
+            } else {
+                feedback.textContent = `❌ 答錯了！正確答案是: ${currentCountry.zh[0]} (${currentCountry.en[0].toUpperCase()})`;
+                feedback.className = "mt-6 p-4 rounded-xl text-center font-bold bg-red-50 text-red-700 border border-red-200";
+            }
+
+            feedback.classList.remove('hidden');
+            submitBtn.textContent = "下一題";
+            submitBtn.className = "bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-xl shadow-md transition-colors";
+        }
+
+        // 跳過題目
+        function skipQuestion() {
+            if (isAnswered) return;
+            
+            const currentCountry = quizPool[currentQuestionIndex];
+            isAnswered = true;
+            answerInput.disabled = true;
+
+            feedback.textContent = `🏳️ 已跳過。正確答案是: ${currentCountry.zh[0]} (${currentCountry.en[0].toUpperCase()})`;
+            feedback.className = "mt-6 p-4 rounded-xl text-center font-bold bg-slate-100 text-slate-600 border border-slate-200";
+            
+            feedback.classList.remove('hidden');
+            submitBtn.textContent = "下一題";
+            submitBtn.className = "bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-xl shadow-md transition-colors";
+        }
+
+        // 進入下一題或結算
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < quizPool.length) {
+                loadQuestion();
+            } else {
+                endGame();
+            }
+        }
+
+        // 更新即時分數
+        function updateScoreDisplay() {
+            scoreText.textContent = `分數: ${score}`;
+        }
+
+        // 結束遊戲結算
+        function endGame() {
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+            finalScore.textContent = score;
+        }
+    </script>
+</body>
+</html>
